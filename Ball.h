@@ -89,4 +89,7 @@ public:
 	float getVy() const { return vy; }
 	float getRadius() const { return radius; }
 	
+	sf::FloatRect getGlobalBounds() const {
+		return shape.getGlobalBounds();
+	};
 };

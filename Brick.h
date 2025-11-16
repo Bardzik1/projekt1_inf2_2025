@@ -6,16 +6,16 @@ class Brick : public sf::RectangleShape {
 private:
 	int hitPoints; //0-3
 	bool Destroyed; //jesli zniszczony = true
-	//sf::RectangleShape brick; nie jest potrzebne, nie programujemy w ten sposób
 	static const std::array<sf::Color, 4> colorLUT; //tablica look-up table
 
 
 public:
-	Brick(sf::Vector2f start_Pos, sf::Vector2f size, int HP);
+	Brick(sf::Vector2f start_pos, sf::Vector2f size, int HP);
 	void aktualizujkolor();
 	void trafienie();
 	void draw(sf::RenderTarget &window);
-	bool isDestroyed();
+	bool checkDestroy() const { return Destroyed; }
+	sf::FloatRect getGlobalBounds() const { return sf::RectangleShape::getGlobalBounds(); }
 };
 
 Brick::Brick(sf::Vector2f start_pos, sf::Vector2f size, int HP)
@@ -51,7 +51,7 @@ void Brick::trafienie()
 	{
 		return;
 	} //zakonczenie funkcji
-	hitPoints = hitPoints - 1;
+	hitPoints--;
 	aktualizujkolor();
 	if (hitPoints <= 0)
 	{
@@ -67,5 +67,10 @@ void Brick::aktualizujkolor()
 
 void Brick::draw(sf::RenderTarget& window)
 {
-	window.draw(*this);
+	if (Destroyed == false)
+	{
+		window.draw(*this);
+	};
 };
+
+
