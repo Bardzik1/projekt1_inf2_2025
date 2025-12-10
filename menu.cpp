@@ -28,6 +28,7 @@ Menu::Menu(float width, float height)
 
    
     menu.push_back(sf::Text(font, "Nowa gra"));
+    menu.push_back(sf::Text(font, "Wczytaj gre"));
     menu.push_back(sf::Text(font, "Ostatnie wyniki"));
     menu.push_back(sf::Text(font, "Wyjscie"));
 
@@ -41,6 +42,9 @@ Menu::Menu(float width, float height)
 
     menu[2].setFillColor(sf::Color::White);
     menu[2].setPosition(sf::Vector2f(width / 3, height / (MAX_LICZBA_POZIOMOW + 1) * 3));
+
+    menu[3].setFillColor(sf::Color::White);
+    menu[3].setPosition(sf::Vector2f(width / 3, height / (MAX_LICZBA_POZIOMOW + 1) * 4));
 
     selectedItem = 0;
 

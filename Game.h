@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
-
+#include "GameState.h"
 #include "Paddle.h"
 #include "Ball.h"
 #include "Brick.h"
@@ -26,6 +26,11 @@ public:
         pilka(320.f, 350.f, 8.f, 2.f, 1.f)
     {
 
+        reset();
+    }
+
+    void reset()
+    {
         const int Ilosc_Kolumn = 6;
         const int Ilosc_Wierszy = 7;
 
@@ -40,7 +45,7 @@ public:
             {
                 float posX = x * (rozmiar_bloku_x + 2.f);
                 float posY = y * (rozmiar_bloku_y + 2.f) + 60.f;
-                
+
                 int zycie = 0;
                 if (y <= 2)
                     zycie = 3;
@@ -50,7 +55,7 @@ public:
                     zycie = 1;
 
                 bloki.emplace_back(sf::Vector2f{ posX, posY }, sf::Vector2f{ rozmiar_bloku_x, rozmiar_bloku_y }, zycie);
-                
+
             }
         }
     }
@@ -65,6 +70,12 @@ public:
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::D) ||
             sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::Right))
             pal.moveRight();
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::F5))
+        {
+            saveGame();
+            sf::sleep(sf::milliseconds(200));
+        }
 
         pal.clamp(width);
 
@@ -110,7 +121,25 @@ public:
         pal.draw(target);
         pilka.draw(target);
 
-      
+
+    }
+
+    void saveGame()
+    {
+        GameState gs;
+        gs.capture(pal, pilka, bloki);
+        gs.saveToFile("savegame.txt");
+    }
+
+    bool loadGame()
+    {
+        GameState gs;
+        if (gs.loadFromFile("savegame.txt"))
+        {
+            gs.apply(pal, pilka, bloki);
+            return true;
+        }
+        return false;
     }
 
 };

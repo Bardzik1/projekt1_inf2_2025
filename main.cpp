@@ -2,7 +2,7 @@
 #include "Menu.h"
 #include <optional>  
 
-enum class GameState { Menu, Playing, Scores, Exiting };
+enum class GameStat { Menu, Playing, Scores, Exiting };
 
 int main()
 {
@@ -15,7 +15,7 @@ int main()
     Menu menu(width, height);
     Game game;  
 
-    GameState currentState = GameState::Menu;
+    GameStat currentState = GameStat::Menu;
 
     sf::Clock deltaClock;
 
@@ -33,11 +33,11 @@ int main()
                 
                 if (key->scancode == sf::Keyboard::Scancode::Escape)
                 {
-                    currentState = GameState::Exiting;
-                    window.close();
+                    currentState = GameStat::Menu;
+                    
                 }
 
-                if (currentState == GameState::Menu)
+                if (currentState == GameStat::Menu)
                 {
                     if (key->scancode == sf::Keyboard::Scancode::Up)
                         menu.przesunG();
@@ -50,40 +50,58 @@ int main()
                         int idx = menu.getSelectedItem();
 
                         if (idx == 0)
-                            currentState = GameState::Playing;
+                        {
+                            game.reset();
+                            currentState = GameStat::Playing;
+                        }
 
                         else if (idx == 1)
-                            currentState = GameState::Scores;
+                        {
+                            if (game.loadGame())
+                            {
+                                currentState = GameStat::Playing;
+                            }
+                        }
 
                         else if (idx == 2)
                         {
-                            currentState = GameState::Exiting;
-                            window.close();
+                                currentState = GameStat::Scores;
                         }
-                    }
+
+                        else if (idx == 3)
+                        {
+                                currentState = GameStat::Exiting;
+                               
+                        }
+                    } 
                 }
             }
         }
 
   
-        if (currentState == GameState::Playing)
+        if (currentState == GameStat::Playing)
         {
             game.update();  
         }
 
         window.clear();
 
-        if (currentState == GameState::Menu)
+        if (currentState == GameStat::Menu)
         {
             menu.draw(window);
         }
-        else if (currentState == GameState::Playing)
+        else if (currentState == GameStat::Playing)
         {
             game.render(window); 
         }
-        else if (currentState == GameState::Scores)
+        else if (currentState == GameStat::Scores)
         {
    
+        }
+
+        else if (currentState == GameStat::Exiting)
+        {
+            window.close();
         }
 
         window.display();

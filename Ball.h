@@ -92,4 +92,13 @@ public:
 	sf::FloatRect getGlobalBounds() const {
 		return shape.getGlobalBounds();
 	};
+
+	void setPosition(float newX, float newY, float newVx, float newVy)
+	{
+		x = newX;
+		y = newY;
+		vx = newVx;
+		vy = newVy;
+		shape.setPosition(sf::Vector2f{ x,y });
+	}
 };

@@ -62,4 +62,11 @@ public:
 	float getW() const { return w; }
 	float getH() const { return h; }
 
+	void setPosition(float newX, float newY)
+	{
+		x = newX;
+		y = newY;
+		shape.setPosition(sf::Vector2f{ x,y });
+	};
+
 };

@@ -16,6 +16,7 @@ public:
 	void draw(sf::RenderTarget &window);
 	bool checkDestroy() const { return Destroyed; }
 	sf::FloatRect getGlobalBounds() const { return sf::RectangleShape::getGlobalBounds(); }
+	int getHP() const { return hitPoints; }
 };
 
 Brick::Brick(sf::Vector2f start_pos, sf::Vector2f size, int HP)
