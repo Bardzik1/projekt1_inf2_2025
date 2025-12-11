@@ -1,8 +1,11 @@
 #include "Game.h"
 #include "Menu.h"
-#include <optional>  
+#include "Scores.h"
+#include "GO.h"
+#include <optional>
+#include <iostream>
 
-enum class GameStat { Menu, Playing, Scores, Exiting };
+enum class GameStat { Menu, Playing, GameOver, Scores, Exiting };
 
 int main()
 {
@@ -13,10 +16,11 @@ int main()
     window.setFramerateLimit(60);
 
     Menu menu(width, height);
-    Game game;  
+    Game game;
+    HighScores highScores(width, height);
+    GameOverScreen gameOverScreen(width, height);
 
     GameStat currentState = GameStat::Menu;
-
     sf::Clock deltaClock;
 
     while (window.isOpen())
@@ -30,21 +34,33 @@ int main()
 
             if (const auto* key = ev->getIf<sf::Event::KeyPressed>())
             {
-                
                 if (key->scancode == sf::Keyboard::Scancode::Escape)
                 {
-                    currentState = GameStat::Menu;
-                    
+                    if (currentState == GameStat::Playing)
+                    {
+                        highScores.addScore(game.getScore());
+                        currentState = GameStat::Menu;
+                    }
+                    else if (currentState == GameStat::GameOver || currentState == GameStat::Scores)
+                    {
+                        currentState = GameStat::Menu;
+                    }
                 }
 
-                if (currentState == GameStat::Menu)
+                else if (currentState == GameStat::GameOver)
+                {
+                    if (key->scancode == sf::Keyboard::Scancode::Enter)
+                    {
+                        currentState = GameStat::Menu;
+                    }
+                }
+
+                else if (currentState == GameStat::Menu)
                 {
                     if (key->scancode == sf::Keyboard::Scancode::Up)
                         menu.przesunG();
-
                     else if (key->scancode == sf::Keyboard::Scancode::Down)
                         menu.przesunD();
-
                     else if (key->scancode == sf::Keyboard::Scancode::Enter)
                     {
                         int idx = menu.getSelectedItem();
@@ -54,34 +70,33 @@ int main()
                             game.reset();
                             currentState = GameStat::Playing;
                         }
-
                         else if (idx == 1)
                         {
-                            if (game.loadGame())
-                            {
-                                currentState = GameStat::Playing;
-                            }
+                            if (game.loadGame()) currentState = GameStat::Playing;
                         }
-
                         else if (idx == 2)
                         {
-                                currentState = GameStat::Scores;
+                            currentState = GameStat::Scores;
                         }
-
                         else if (idx == 3)
                         {
-                                currentState = GameStat::Exiting;
-                               
+                            window.close();
                         }
-                    } 
+                    }
                 }
             }
         }
 
-  
         if (currentState == GameStat::Playing)
         {
-            game.update();  
+            game.update();
+
+            if (game.isGameOver())
+            {
+                highScores.addScore(game.getScore());
+                gameOverScreen.setScore(game.getScore());
+                currentState = GameStat::GameOver;
+            }
         }
 
         window.clear();
@@ -92,19 +107,20 @@ int main()
         }
         else if (currentState == GameStat::Playing)
         {
-            game.render(window); 
+            game.render(window);
         }
         else if (currentState == GameStat::Scores)
         {
-   
+            highScores.draw(window);
         }
-
-        else if (currentState == GameStat::Exiting)
+        else if (currentState == GameStat::GameOver)
         {
-            window.close();
+            game.render(window);
+            gameOverScreen.draw(window);
         }
 
-        window.display();
+        if (window.isOpen())
+            window.display();
     }
 
     return 0;

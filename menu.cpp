@@ -15,14 +15,14 @@ Menu::Menu(float width, float height)
     bool fontLoaded = false;
     for (const char* path : fontPaths) {
         if (font.openFromFile(path)) {
-            std::cout << "Successfully loaded font from: " << path << std::endl;
+            std::cout << "Sciezka zaladowanej czcionki: " << path << std::endl;
             fontLoaded = true;
             break;
         }
     }
 
     if (!fontLoaded) {
-        std::cout << "CRITICAL: Could not load any font!" << std::endl;
+        std::cout << "Nie zaladowano czcionki" << std::endl;
         
     }
 

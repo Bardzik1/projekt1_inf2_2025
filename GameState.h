@@ -9,43 +9,48 @@
 
 struct BlockData
 {
-	float x, y;
-	int hp;
+    float x, y;
+    int hp;
 };
 
 class GameState
 {
 private:
-	sf::Vector2f paddlePosition;
-	sf::Vector2f ballPosition;
-	sf::Vector2f ballVelocity;
-	std::vector<BlockData> blocks;
+    sf::Vector2f paddlePosition;
+    sf::Vector2f ballPosition;
+    sf::Vector2f ballVelocity;
+    std::vector<BlockData> blocks;
+    int savedScore = 0;
+
 public:
-	void capture(const Paddle& pal, const Ball& pilka, const std::vector<Brick>& bloki)
-	{
-		paddlePosition = { pal.getX(), pal.getY() };
-		ballPosition = { pilka.getX(), pilka.getY() };
-		ballVelocity = { pilka.getVx(), pilka.getVy() };
+    void capture(const Paddle& pal, const Ball& pilka, const std::vector<Brick>& bloki, int score)
+    {
+        paddlePosition = { pal.getX(), pal.getY() };
+        ballPosition = { pilka.getX(), pilka.getY() };
+        ballVelocity = { pilka.getVx(), pilka.getVy() };
+        savedScore = score;
 
-		blocks.clear();
-		for (const auto& brick : bloki)
-		{
-			if (!brick.checkDestroy())
-			{
-				blocks.push_back({ brick.getPosition().x, brick.getPosition().y, brick.getHP()});
-			}
-		}
-	}
+        blocks.clear();
+        for (const auto& brick : bloki)
+        {
+            if (!brick.checkDestroy())
+            {
+                blocks.push_back({ brick.getPosition().x, brick.getPosition().y, brick.getHP() });
+            }
+        }
+    }
 
-	bool saveToFile(const std::string& filename)
-	{
-		std::ofstream file(filename);
-		if (!file.is_open()) return false;
+    bool saveToFile(const std::string& filename)
+    {
+        std::ofstream file(filename);
+        if (!file.is_open()) return false;
 
-		file << "PADDLE " << paddlePosition.x << " " << paddlePosition.y << "\n";
+        file << "PADDLE " << paddlePosition.x << " " << paddlePosition.y << "\n";
 
-		file << "BALL " <<ballPosition.x << " " << ballPosition.y << " "
+        file << "BALL " << ballPosition.x << " " << ballPosition.y << " "
             << ballVelocity.x << " " << ballVelocity.y << "\n";
+
+        file << "SCORE " << savedScore << "\n";
 
         file << "BLOCKS_COUNT " << blocks.size() << "\n";
 
@@ -71,8 +76,9 @@ public:
         std::string label;
 
         if (!(file >> label >> paddlePosition.x >> paddlePosition.y)) return false;
-
         if (!(file >> label >> ballPosition.x >> ballPosition.y >> ballVelocity.x >> ballVelocity.y)) return false;
+
+        if (!(file >> label >> savedScore)) return false;
 
         int count;
         if (!(file >> label >> count)) return false;
@@ -91,11 +97,12 @@ public:
         return true;
     }
 
-    void apply(Paddle& pal, Ball& pilka, std::vector<Brick>& blokiRef)
+    void apply(Paddle& pal, Ball& pilka, std::vector<Brick>& blokiRef, int& gameScore)
     {
         pal.setPosition(paddlePosition.x, paddlePosition.y);
-
         pilka.setPosition(ballPosition.x, ballPosition.y, ballVelocity.x, ballVelocity.y);
+
+        gameScore = savedScore;
 
         blokiRef.clear();
 
@@ -108,5 +115,4 @@ public:
             blokiRef.emplace_back(sf::Vector2f{ data.x, data.y }, size, data.hp);
         };
     }
-
 };

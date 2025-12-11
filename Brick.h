@@ -1,12 +1,12 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include <array> //prosta tablica stalego rozmiaru
+#include <array> 
 
 class Brick : public sf::RectangleShape {
 private:
-	int hitPoints; //0-3
-	bool Destroyed; //jesli zniszczony = true
-	static const std::array<sf::Color, 4> colorLUT; //tablica look-up table
+	int hitPoints; 
+	bool Destroyed; 
+	static const std::array<sf::Color, 4> colorLUT; 
 
 
 public:
@@ -30,7 +30,7 @@ Brick::Brick(sf::Vector2f start_pos, sf::Vector2f size, int HP)
 	{
 		HP = 0;
 	}
-	Destroyed = false; //nie jest zniszczony
+	Destroyed = false; 
 	this->setPosition(start_pos);
 	this->setSize(size);
 	this->setOutlineThickness(2.f);
@@ -51,13 +51,13 @@ void Brick::trafienie()
 	if (Destroyed == true)
 	{
 		return;
-	} //zakonczenie funkcji
+	} 
 	hitPoints--;
 	aktualizujkolor();
 	if (hitPoints <= 0)
 	{
 		Destroyed = true;
-	}; //jest zniszczony
+	}; 
 };
 
 void Brick::aktualizujkolor()
